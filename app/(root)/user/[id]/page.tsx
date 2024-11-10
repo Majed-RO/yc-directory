@@ -3,7 +3,6 @@ import { StartupCardSkeleton } from '@/components/StartupCard';
 import UserStartups from '@/components/UserStartups';
 import { client } from '@/sanity/lib/client';
 import { AUTHOR_BY_ID_QUERY } from '@/sanity/lib/queries';
-import { Author } from '@/sanity/types';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import React, { Suspense } from 'react';
@@ -21,7 +20,7 @@ const UserProfilePage = async ({
 
 	// if(!session) return
 
-	const user: Author = await client.fetch(AUTHOR_BY_ID_QUERY, { id });
+	const user = await client.fetch(AUTHOR_BY_ID_QUERY, { id });
 
 	if (!user) return notFound();
 

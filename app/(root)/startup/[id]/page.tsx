@@ -54,7 +54,7 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	const startupData = getPost(id);
 	const playlistData = getPlaylist();
 
-	const [post, { select: editorPosts }] = await Promise.all([
+	const [post, playlist] = await Promise.all([
 		startupData,
 		playlistData
 	]);
@@ -70,6 +70,8 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 		_createdAt,
 		author
 	} = post;
+
+  const editorPosts = playlist?.select || [];
 
 	const parsedContent = md.render(pitch as string);
 
@@ -157,7 +159,7 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 						<ul className="mt-7 card_grid-sm">
 							{editorPosts.map(
 								(
-									post: StartupCardType,
+									post,
 									i: number
 								) => (
 									<StartupCard
@@ -165,7 +167,7 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 											i
 										}
 										post={
-											post
+											post as StartupCardType
 										}
 									/>
 								)

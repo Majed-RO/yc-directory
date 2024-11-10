@@ -8,15 +8,17 @@ import { unstable_after as after } from 'next/server'
 
 
 export const Views = async ({ id }: { id: string }) => {
-	const { views: totalViews } = await client
+	const viewsResult = await client
 		.withConfig({ useCdn: false })
 		.fetch(STARTUP_VIEWS_QUERY, { id });
+
+    const totalViews = viewsResult !== null  ? viewsResult?.views : 0;
 
 	// update the number of views whenever someone sees the startup
 
   after(async () => await writeClient
   .patch(id)
-  .set({views: totalViews + 1})
+  .set({views: totalViews ? totalViews  + 1 : 1})
   .commit());
 
 	return (

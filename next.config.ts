@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   experimental: {
     after: true
   },
+  /* typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  }, */
   devIndicators: {
     appIsrStatus: true,
     buildActivity: true,
