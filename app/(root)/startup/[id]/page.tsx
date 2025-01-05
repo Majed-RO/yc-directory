@@ -73,7 +73,9 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   const editorPosts = playlist?.select || [];
 
-	const parsedContent = md.render(pitch as string);
+  console.log('PITCH=====', pitch);
+
+	const parsedContent = pitch &&  md.render(pitch as string);
 
 	return (
 		<>

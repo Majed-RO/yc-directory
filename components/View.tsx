@@ -15,7 +15,6 @@ export const Views = async ({ id }: { id: string }) => {
     const totalViews = viewsResult !== null  ? viewsResult?.views : 0;
 
 	// update the number of views whenever someone sees the startup
-
   after(async () => await writeClient
   .patch(id)
   .set({views: totalViews ? totalViews  + 1 : 1})
