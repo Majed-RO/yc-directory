@@ -6,6 +6,9 @@ import React from 'react';
 const CreateStartupPage = async () => {
 	const session = await auth();
 
+	// console.log('SESSION====', session);
+
+  // If user is not logged in, redirect to home page
 	if (!session) redirect('/');
 
 	return (

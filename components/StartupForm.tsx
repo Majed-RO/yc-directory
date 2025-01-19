@@ -53,10 +53,10 @@ const StartupForm = () => {
 			pitch
 		};
 
-		// console.log('FORMVALUES', formValues);
-
 		try {
-			await formSchema.parseAsync(formValues); // will throw an error if validation got failed
+			// validation through zod schema
+			// will throw an error if validation got failed
+			await formSchema.parseAsync(formValues);
 
 			// This is a server action
 			const result = await createPitch(
@@ -70,10 +70,17 @@ const StartupForm = () => {
 					title: 'Success',
 					description:
 						'Your startup pitch has been created successfully.',
-					variant: 'default'
+					variant: 'success'
 				});
 
 				router.push(`/startup/${result?._id}`);
+			} else {
+				console.log('error', result.error);
+				toast({
+					title: 'Error',
+					description: result.error,
+					variant: 'destructive'
+				});
 			}
 
 			return result;
@@ -81,8 +88,6 @@ const StartupForm = () => {
 			if (error instanceof z.ZodError) {
 				const fieldsErrors =
 					error.flatten().fieldErrors;
-
-				console.log('Errors', fieldsErrors);
 
 				setErrors(
 					fieldsErrors as unknown as Record<
@@ -96,6 +101,10 @@ const StartupForm = () => {
 					description:
 						'Please check your inputs and try again',
 					variant: 'destructive'
+					/* style: {
+						backgroundColor: 'red',
+						color: 'white'
+					} */
 				});
 
 				return {
@@ -105,6 +114,7 @@ const StartupForm = () => {
 					status: 'ERROR'
 				};
 			} else {
+				console.log('error', error);
 				toast({
 					title: 'Error',
 					description:
@@ -139,7 +149,6 @@ const StartupForm = () => {
 
 	return (
 		<form action={formAction} className="startup-form">
-			<h1>{JSON.stringify(state)}</h1>
 			<div>
 				<label
 					htmlFor="title"
@@ -246,6 +255,10 @@ const StartupForm = () => {
 
 				<MDEditor
 					id="pitch"
+					value={pitch}
+					onChange={value =>
+						setPitch(value as string)
+					}
 					preview="edit"
 					height={300}
 					style={{
@@ -259,10 +272,6 @@ const StartupForm = () => {
 					previewOptions={{
 						disallowedElements: ['style']
 					}}
-					value={pitch}
-					onChange={value =>
-						setPitch(value as string)
-					}
 				/>
 				{/* <MDEditor.Markdown source={pitch} /> */}
 
@@ -275,13 +284,13 @@ const StartupForm = () => {
 
 			<Button
 				type="submit"
-				className="startup-form_btn text-white"
+				className="startup-form_btn text-white group"
 				disabled={isPending}
 			>
 				{isPending
 					? 'Submitting...'
 					: 'Submit Your Idea'}
-				<Send className="size-6 ml-2" />
+				<Send className="size-6 ml-2  group-hover:scale-110" />
 			</Button>
 		</form>
 	);

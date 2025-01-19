@@ -22,6 +22,7 @@ export async function createPitch(
 		});
 	}
 
+  // to remove pitch key/value from the form object
 	const { title, description, category, link } = Object.fromEntries(
 		Array.from(form).filter(([key]) => key !== 'pitch')
 	);
@@ -49,6 +50,7 @@ export async function createPitch(
 			_type: 'startup',
 			...startup
 		});
+
 
 		return parseServerActionResponse({
 			...result,

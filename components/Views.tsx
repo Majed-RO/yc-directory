@@ -4,21 +4,24 @@ import { client } from '@/sanity/lib/client';
 import { STARTUP_VIEWS_QUERY } from '@/sanity/lib/queries';
 import { writeClient } from '@/sanity/lib/write-client';
 
-import { unstable_after as after } from 'next/server'
-
+import { after } from 'next/server';
 
 export const Views = async ({ id }: { id: string }) => {
-	const viewsResult = await client
+	const {views: totalViews} = await client
 		.withConfig({ useCdn: false })
-		.fetch(STARTUP_VIEWS_QUERY, { id });
+		.fetch(STARTUP_VIEWS_QUERY, { id }) || { views: 0 };
 
-    const totalViews = viewsResult !== null  ? viewsResult?.views : 0;
+	// const totalViews = viewsResult !== null ? viewsResult?.views : 0;
 
 	// update the number of views whenever someone sees the startup
-  after(async () => await writeClient
-  .patch(id)
-  .set({views: totalViews ? totalViews  + 1 : 1})
-  .commit());
+  // https://nextjs.org/docs/app/api-reference/functions/after
+	after(
+		async () =>
+			await writeClient
+				.patch(id)
+				.set({ views: totalViews! + 1 })
+				.commit()
+	);
 
 	return (
 		<div className="view-container">

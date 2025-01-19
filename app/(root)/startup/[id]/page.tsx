@@ -11,7 +11,7 @@ import { notFound } from 'next/navigation';
 import markdownit from 'markdown-it';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Views } from '@/components/View';
+import { Views } from '@/components/Views';
 import StartupCard, { StartupCardType } from '@/components/StartupCard';
 
 const md = markdownit();
@@ -51,13 +51,17 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	); */
 
 	/* Parallel Data Fetching */
+	// first way
 	const startupData = getPost(id);
 	const playlistData = getPlaylist();
 
-	const [post, playlist] = await Promise.all([
-		startupData,
-		playlistData
-	]);
+	const [post, playlist] = await Promise.all([startupData, playlistData]);
+
+	// second way
+	/* const [post, playlist ] = await Promise.all([
+		client.fetch(STARTUP_BY_ID_QUERY, { id }),
+		client.fetch(PLAYLIST_BY_SLUG_QUERY, { slug: 'editors-pick' }) 
+	]); */
 
 	if (!post) return notFound();
 
@@ -71,11 +75,9 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 		author
 	} = post;
 
-  const editorPosts = playlist?.select || [];
+	const editorPosts = playlist?.select || [];
 
-  console.log('PITCH=====', pitch);
-
-	const parsedContent = pitch &&  md.render(pitch as string);
+	const parsedContent = pitch && md.render((pitch as string) || '');
 
 	return (
 		<>
@@ -83,16 +85,31 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 				<p className="tag">{formatDate(_createdAt)}</p>
 
 				<h1 className="heading">{title}</h1>
-				<p className="sub-heading !max-w-5xl">
+				<p className="sub-heading !max-w-5xl capitalize-first">
 					{description}
 				</p>
 			</section>
 
 			<section className="section_container">
-				<img
+				{/* eslint-disable-next-line @next/next/no-img-element */}
+				{/* <img
 					src={image || ''}
 					alt="thumbnail"
 					className="w-full h-auto rounded-xl"
+				/> */}
+
+				{/* width and height used to reserve a place for the image, to prevent layout shift */}
+				<Image
+					src={image || ''}
+					alt="thumbnail"
+					width={500}
+					height={500}
+					className="w-full h-[500px] rounded-xl"
+					style={{
+						objectFit: 'cover',
+						objectPosition: '0 0'
+					}}
+					quality={100}
 				/>
 
 				<div className="space-y-5 mt-10 max-w-4xl mx-auto">
@@ -148,34 +165,35 @@ const StartupPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 					)}
 				</div>
 
-				<hr className="divider" />
-
 				{/* Editor selected startups */}
-
 				{editorPosts?.length > 0 && (
-					<div className="max-w-4xl mx-auto">
-						<p className="text-30-semibold">
-							Editor Picks
-						</p>
+					<>
+						<hr className="divider" />
 
-						<ul className="mt-7 card_grid-sm">
-							{editorPosts.map(
-								(
-									post,
-									i: number
-								) => (
-									<StartupCard
-										key={
-											i
-										}
-										post={
-											post as StartupCardType
-										}
-									/>
-								)
-							)}
-						</ul>
-					</div>
+						<div className="max-w-4xl mx-auto">
+							<p className="text-30-semibold">
+								Editor Picks
+							</p>
+
+							<ul className="mt-7 card_grid-sm">
+								{editorPosts.map(
+									(
+										post,
+										i: number
+									) => (
+										<StartupCard
+											key={
+												i
+											}
+											post={
+												post as StartupCardType
+											}
+										/>
+									)
+								)}
+							</ul>
+						</div>
+					</>
 				)}
 
 				{/* this piece of data will be rendered dynamically in realtime  */}

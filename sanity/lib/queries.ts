@@ -3,12 +3,16 @@ import { defineQuery } from 'next-sanity';
 /* 
 explain the query:
 _type == "startup" : type of the document == 'startup'
-defined(slug.current) : the slug of the document should exist
+defined(slug.current) : the slug of the document should exist | not null
 !defined($search) : if there is not search term exist, stop the filter till this point,
 otherwise:
 title match $search : Searches title, returning true if a match is found; otherwise it returns false, if false go the followed search ( category ) ..etc
+order(_createdAt desc) : order the results by the creation date in descending order; the newest first
 see: https://www.sanity.io/docs/groq-operators#429fa3c5c84d
 */
+
+// these properties is shared between all documents in sanity:  _type, _updatedAt, _rev
+
 export const STARTUPS_QUERY =
 	defineQuery(`*[_type == "startup" && defined(slug.current) && !defined($search) || title match $search || category match $search || author->name match $search] | order(_createdAt desc) {
     _id,
@@ -49,8 +53,11 @@ export const STARTUP_VIEWS_QUERY =
       }    
       `);
 
-// _type, _updatedAt, _rev
 
+/* 
+id == github id
+_id == sanity id
+*/
 export const AUTHOR_BY_GITHUB_ID_QUERY =
 	defineQuery(`*[_type == "author" && id == $id][0] {
       _id,

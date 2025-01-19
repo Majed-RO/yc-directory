@@ -25,6 +25,7 @@ const StartupCard = ({ post }: { post: StartupCardType }) => {
 
 	return (
 		<li className="startup-card group">
+      {/* Card header */}
 			<div className="flex-between">
 				<p className="startup_card_date">
 					{formatDate(_createdAt)}
@@ -38,9 +39,11 @@ const StartupCard = ({ post }: { post: StartupCardType }) => {
 				</div>
 			</div>
 
+      {/* Card title and author */}
 			<div className="flex-between mt-5 gap-5">
 				<div className="flex-1">
 					<Link href={`/user/${author?._id}`}>
+          {/* line-clamp-1 = name should never exceed one line */}
 						<p className="text-16-medium line-clamp-1">
 							{author?.name}
 						</p>
@@ -64,11 +67,13 @@ const StartupCard = ({ post }: { post: StartupCardType }) => {
 				</Link>
 			</div>
 
+      {/* Description and image */}
 			<Link href={`/startup/${_id}`}>
 				<p className="startup-card_desc">
 					{description}
 				</p>
 
+				{/* eslint-disable-next-line @next/next/no-img-element */}
 				<img
 					src={image}
 					alt="placeholder"
@@ -76,6 +81,7 @@ const StartupCard = ({ post }: { post: StartupCardType }) => {
 				/>
 			</Link>
 
+      {/* Category and details link */}
 			<div className="flex-between gap-3 mt-5">
 				<Link
 					href={`/?query=${category?.toLowerCase()}`}
@@ -85,6 +91,9 @@ const StartupCard = ({ post }: { post: StartupCardType }) => {
 					</p>
 				</Link>
 
+        {/* we use asChild bcz there is a link within the button 
+        == here we want to display the link as button, meanwhile we want to navigate to the link url
+        */}
 				<Button className="startup-card_btn" asChild>
 					<Link href={`/startup/${_id}`}>
 						Details
